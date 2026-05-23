@@ -132,17 +132,6 @@ def test_predict_internal_error(monkeypatch):
 
 # ─── Lifespan ─────────────────────────────────────────────────
 
-def test_lifespan_charge_modele():
-    """Vérifie que le lifespan charge bien le modèle."""
-    from fastapi.testclient import TestClient
-    from app.main import app, ml_models
-    ml_models.clear()
-    with TestClient(app) as c:
-        response = c.get("/health")
-        assert response.status_code == 200
-        assert "model" in ml_models
-
-
 def test_lifespan_erreur_chargement(monkeypatch):
     """Vérifie que le lifespan lève une erreur si modèle introuvable."""
     import joblib
@@ -158,3 +147,28 @@ def test_lifespan_erreur_chargement(monkeypatch):
     with pytest.raises(Exception):
         with TestClient(app) as c:
             pass
+
+
+# ─── Lifespan avec mock ───────────────────────────────────────
+
+def test_lifespan_charge_modele_mock(monkeypatch):
+    """Vérifie que le lifespan charge bien le modèle via mock."""
+    import numpy as np
+    from unittest.mock import MagicMock
+    import joblib
+
+    mock_model = MagicMock()
+    mock_model.predict_proba.return_value = np.array([[0.74, 0.26]])
+    mock_scaler = MagicMock()
+    mock_scaler.transform.return_value = np.zeros((1, 175))
+
+    monkeypatch.setattr(joblib, "load", lambda path: mock_model if "lgbm" in path else mock_scaler)
+
+    from fastapi.testclient import TestClient
+    from app.main import app, ml_models
+    ml_models.clear()
+
+    with TestClient(app) as c:
+        response = c.get("/health")
+        assert response.status_code == 200
+        assert "model" in ml_models
