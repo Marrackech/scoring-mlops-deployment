@@ -1,34 +1,30 @@
-# Image de base légère Python 3.10
 FROM python:3.10-slim
 
-# Métadonnées
-LABEL maintainer="Marrackech"
+LABEL maintainer="UserMarrakech"
 LABEL description="API Scoring Crédit — Prêt à Dépenser"
 LABEL version="1.0.0"
 
-# Installation des dépendances système pour LightGBM
+# Dépendances système pour LightGBM
 RUN apt-get update && apt-get install -y \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Répertoire de travail
+# User non-root requis par Hugging Face
+RUN useradd -m -u 1000 user
+USER user
+ENV PATH="/home/user/.local/bin:$PATH"
+
 WORKDIR /app
 
-# Copie des dépendances en premier (cache Docker)
-COPY requirements.txt .
-
-# Installation des dépendances Python
+COPY --chown=user requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copie du code source uniquement
-COPY app/ ./app/
-COPY model/ ./model/
+COPY --chown=user app/ ./app/
+COPY --chown=user model/ ./model/
 
-# Création du dossier logs
 RUN mkdir -p logs
 
-# Port exposé
-EXPOSE 8000
+# Port 7860 requis par Hugging Face Spaces
+EXPOSE 7860
 
-# Lancement de l'API
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7860"]
