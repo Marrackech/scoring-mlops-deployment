@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+venv/
+.venv/
+
+# Données et logs
+logs/
+model/reference_data.csv
+
+# Tests
+tests/
+
+# Notebooks
+*.ipynb
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# OS
+.DS_Store
