@@ -61,16 +61,16 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout du code (full history)
+      - name: Checkout du code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          lfs: true
 
       - name: Push vers Hugging Face Spaces
-        uses: huggingface/huggingface-spaces-action@main
-        with:
-          user-id: UserMarrakech
-          space-id: scoring-api
-          path: .
-          token: ${{ secrets.HF_TOKEN }}
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config --global user.email "ci@github.com"
+          git config --global user.name "GitHub Actions"
+          git remote add hf https://UserMarrakech:$HF_TOKEN@huggingface.co/spaces/UserMarrakech/scoring-api
+          git push hf main --force
