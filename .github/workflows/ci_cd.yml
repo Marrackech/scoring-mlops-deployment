@@ -42,14 +42,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build image Docker
-        run: |
-          docker build -t scoring-api:latest .
+        run: docker build -t scoring-api:latest .
 
-      - name: Test du container
+      - name: Démarrage container
+        run: docker run -d -p 7860:7860 --name scoring-test scoring-api:latest
+
+      - name: Attente démarrage (30s)
+        run: sleep 30
+
+      - name: Logs du container
+        run: docker logs scoring-test
+
+      - name: Test santé API
+        run: curl -f http://localhost:7860/health
+
+      - name: Arrêt container
         run: |
-          docker run -d -p 7860:7860 --name scoring-test scoring-api:latest
-          sleep 15
-          curl -f http://localhost:7860/health
           docker stop scoring-test
           docker rm scoring-test
 
@@ -66,18 +74,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Push vers Hugging Face Spaces (sans modèle binaire)
+      - name: Push vers Hugging Face Spaces
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           git config --global user.email "ci@github.com"
           git config --global user.name "GitHub Actions"
           git remote add hf https://UserMarrakech:$HF_TOKEN@huggingface.co/spaces/UserMarrakech/scoring-api
-
-          # Exclure les fichiers binaires du push HF
-          echo "model/lgbm_best.joblib" >> .gitignore
-          echo "model/scaler.joblib" >> .gitignore
-          git add .gitignore
-          git commit -m "ci: exclude binary model files from HF push" || true
-
           git push hf main --force
