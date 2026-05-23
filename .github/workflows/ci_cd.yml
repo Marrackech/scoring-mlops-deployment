@@ -70,4 +70,4 @@ jobs:
         run: |
           git config --global user.email "ci@github.com"
           git config --global user.name "GitHub Actions"
-          git push https://UserMarrakech:$HF_TOKEN@huggingface.co/spaces/UserMarrakech/scoring-api main
+          git push --force https://UserMarrakech:$HF_TOKEN@huggingface.co/spaces/UserMarrakech/scoring-api main
