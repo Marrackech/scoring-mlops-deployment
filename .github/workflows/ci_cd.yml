@@ -66,11 +66,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Push vers Hugging Face Spaces
+      - name: Push vers Hugging Face Spaces (sans modèle binaire)
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           git config --global user.email "ci@github.com"
           git config --global user.name "GitHub Actions"
           git remote add hf https://UserMarrakech:$HF_TOKEN@huggingface.co/spaces/UserMarrakech/scoring-api
+
+          # Exclure les fichiers binaires du push HF
+          echo "model/lgbm_best.joblib" >> .gitignore
+          echo "model/scaler.joblib" >> .gitignore
+          git add .gitignore
+          git commit -m "ci: exclude binary model files from HF push" || true
+
           git push hf main --force
