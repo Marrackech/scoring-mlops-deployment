@@ -1,13 +1,19 @@
 import pytest
-import joblib
+import numpy as np
+from unittest.mock import MagicMock
 from app.predict import predict_score, SEUIL
 
 
 @pytest.fixture
 def model_and_scaler():
-    model = joblib.load("model/lgbm_best.joblib")
-    scaler = joblib.load("model/scaler.joblib")
-    return model, scaler
+    """Mock du modèle et scaler pour les tests."""
+    mock_model = MagicMock()
+    mock_model.predict_proba.return_value = np.array([[0.74, 0.26]])
+
+    mock_scaler = MagicMock()
+    mock_scaler.transform.return_value = np.zeros((1, 175))
+
+    return mock_model, mock_scaler
 
 
 def test_seuil_value():
