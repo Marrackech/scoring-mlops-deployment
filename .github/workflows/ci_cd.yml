@@ -47,9 +47,9 @@ jobs:
 
       - name: Test du container
         run: |
-          docker run -d -p 8000:8000 --name scoring-test scoring-api:latest
+          docker run -d -p 7860:7860 --name scoring-test scoring-api:latest
           sleep 5
-          curl -f http://localhost:8000/health
+          curl -f http://localhost:7860/health
           docker stop scoring-test
           docker rm scoring-test
 
