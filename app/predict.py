@@ -42,6 +42,7 @@ def predict_score(model, scaler, input_data: dict) -> Tuple[float, str]:
 
     df = pd.DataFrame([row], columns=FEATURE_NAMES)
     df = df.fillna(0)
+    pd.set_option("future.no_silent_downcasting", True)
 
     # Application du scaler
     df_scaled = scaler.transform(df)
