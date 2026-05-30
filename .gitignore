@@ -219,3 +219,7 @@ __marimo__/
 model/reference_data.csv
 monitoring/drift_report.html
 logs/
+
+# Modèles binaires — téléchargés au build depuis GitHub Release
+model/*.joblib
+model/features.json
