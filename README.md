@@ -1,3 +1,12 @@
+---
+title: Scoring API Credit
+emoji: 💳
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
+
 # 🏦 Scoring Crédit — API MLOps Prêt à Dépenser
 
 API de prédiction du risque de défaut de remboursement, déployée avec FastAPI et Docker.
