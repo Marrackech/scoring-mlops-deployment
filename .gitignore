@@ -223,3 +223,4 @@ logs/
 # Modèles binaires — téléchargés au build depuis GitHub Release
 model/*.joblib
 model/features.json
+screen/
