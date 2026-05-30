@@ -8,38 +8,32 @@ on:
 
 jobs:
 
-  # ─── Job 1 : Tests ────────────────────────────────────────────
   test:
     name: Tests unitaires
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
-
-      - name: Setup Python 3.10
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
+      - run: pip install -r requirements.txt pytest pytest-cov httpx
+      - run: pytest tests/ -v --cov=app --cov-report=term-missing
 
-      - name: Installation des dépendances
-        run: |
-          pip install -r requirements.txt
-          pip install pytest pytest-cov httpx
-
-      - name: Lancement des tests avec couverture
-        run: |
-          pytest tests/ -v --cov=app --cov-report=term-missing
-
-  # ─── Job 2 : Build Docker ─────────────────────────────────────
   build:
     name: Build image Docker
     runs-on: ubuntu-latest
     needs: test
-
     steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+
+      - name: Téléchargement des artefacts modèle
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p model
+          gh release download v0.1.0-model \
+            --repo Marrackech/scoring-mlops-deployment \
+            --dir model/
 
       - name: Build image Docker
         run: docker build -t scoring-api:latest .
@@ -47,8 +41,8 @@ jobs:
       - name: Démarrage container
         run: docker run -d -p 7860:7860 --name scoring-test scoring-api:latest
 
-      - name: Attente démarrage (30s)
-        run: sleep 30
+      - name: Attente démarrage
+        run: sleep 20
 
       - name: Logs du container
         run: docker logs scoring-test
@@ -61,16 +55,13 @@ jobs:
           docker stop scoring-test
           docker rm scoring-test
 
-  # ─── Job 3 : Deploy Hugging Face ──────────────────────────────
   deploy:
     name: Deploy sur Hugging Face Spaces
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main'
-
     steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
