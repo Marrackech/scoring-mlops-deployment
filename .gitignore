@@ -218,3 +218,4 @@ __marimo__/
 .streamlit/secrets.toml
 model/reference_data.csv
 monitoring/drift_report.html
+logs/
