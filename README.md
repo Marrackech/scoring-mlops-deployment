@@ -133,3 +133,4 @@ Déclenché sur push vers `main` et `develop` :
 - **Docker** : python:3.10-slim
 - **CI/CD** : GitHub Actions
 - **Monitoring** : Streamlit + Evidently AI
+# Demo soutenance Dim  7 jui 2026 18:31:40 CEST
