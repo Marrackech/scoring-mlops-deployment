@@ -135,3 +135,4 @@ Déclenché sur push vers `main` et `develop` :
 - **Monitoring** : Streamlit + Evidently AI
 # Demo soutenance Dim  7 jui 2026 18:31:40 CEST
 # Demo soutenance Dim  7 jui 2026 18:35:42 CEST
+# Demo soutenance
